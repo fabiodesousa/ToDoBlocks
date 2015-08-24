@@ -17,6 +17,7 @@ Each new task for the user gets sent to Incoming. As soon as possible, the user 
 - Add task to incoming (with a / command?)
 
 ## Dream features
+- Productivity buddies!
 - Integrate Asana as well
 
 ## Reasoning
