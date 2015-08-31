@@ -5,19 +5,19 @@ import dateutil.parser
 import pytz
 
 # API keys:
-trello_key = # trello key
-trello_token = # trello token
-slack_key = # slack key
+trello_key = '704e6c320a6b289a96d1da11cf209e3a' # trello key
+trello_token = 'bee447a36ea702188f84761692ed14d66954931b6df13268e870ebe8250f9e58' # trello token
+slack_key = 'xoxp-2366742675-2366742677-9704170688-5d6984' # slack key
 # trello things
-trello_board_id = #'Main' board
+trello_board_id = 'BjUnAzlo' #'Main' board
 trello = trello.TrelloApi(trello_key, token=trello_token)
 
 # function to post daily tasks to Slack
 # takes list of tuples (task_string, task_time)
 def slackPost(task_list):
   # Slack setup
-  slack_channel = # Slack channel or message "#channel_name" or "@message_recipient"
-  slack_bot_name = # name of Slack bot (string)
+  slack_channel = '@fabio'# Slack channel or message "#channel_name" or "@message_recipient"
+  slack_bot_name = 'ToDoBot'# name of Slack bot (string)
   # create a Slack object
   slack = Slacker(slack_key)
   #print header
@@ -63,7 +63,6 @@ def convertTimeZoneFromUTC(timestampValue):
 # takes a trello 'Due' string (UTC)
 # returns a localized datetime object
 def trelloDateParse(due):
-  print due
   due_utc = dateutil.parser.parse(due)
   return convertTimeZoneFromUTC(due_utc)
 
@@ -122,6 +121,13 @@ def setCardListToday(card, lists_dict):
   today_list_id = lists_dict['Today']
   trello.cards.update_idList(card['id'], today_list_id)
 
+# function that archives cards in the "Done" list
+def archiveDoneCards(lists_dict):
+  # for every card in the Done board
+  for card in trello.lists.get_card(lists_dict['Done']):
+    # archive the card
+    trello.cards.update_closed(card['id'], 'true')
+
 # main
 
 # instantiate slack_queue
@@ -129,9 +135,17 @@ slack_queue = []
 
 # get lists_dict
 lists_dict = getListNamesAndIds(getTrelloLists(trello_board_id))
+# get all cards
+cards = getTrelloCards(trello_board_id)
+# archive cards that are in 'Done'
+archiveDoneCards(lists_dict)
+
+# AT SOME POINT:
+# Change functions so that you do one loop and everything happens then?
+# This would make it O(n)?
 
 # for every card due today
-for card in getCardsDueToday(getTrelloCards(trello_board_id)):
+for card in getCardsDueToday(cards):
   # set that card's list to Today
   setCardListToday(card, lists_dict)
   # send card name and due (rounded) to slack_queue
