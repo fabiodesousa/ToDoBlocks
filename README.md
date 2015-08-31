@@ -15,15 +15,16 @@ Each new task for the user gets sent to Incoming. As soon as possible, the user 
 - Messages list of tasks due today to Slack
 
 ## Next steps
-- This Week functionality
-- Later functionality
+- "This Week" functionality
+- "Later" functionality
+- Archive items in the "Done" list
 - Sort slack post items by time
 
-## Later features
+## On the horizon
 - Respond to the Slackbot to mark tasks as done (or send back to incoming if needs rescheduling)
 - Waiting On list integration (tasks that you're waiting on someone to get back to you for you to complete)
-- Reminder message of the next task as it arrives
 - Add task to incoming (with a / command?)
+- Reminder message of the next task as it arrives
 
 ## Dream features
 - Productivity buddies!
