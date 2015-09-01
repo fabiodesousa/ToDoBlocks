@@ -5,11 +5,11 @@ import dateutil.parser
 import pytz
 
 # API keys:
-trello_key = # trello key
-trello_token =  # trello token
-slack_key =  # slack key
+trello_key = '704e6c320a6b289a96d1da11cf209e3a' # trello key
+trello_token = 'bee447a36ea702188f84761692ed14d66954931b6df13268e870ebe8250f9e58' # trello token
+slack_key = 'xoxp-2366742675-2366742677-9704170688-5d6984' # slack key
 # trello things
-trello_board_id = #'Main' board
+trello_board_id = 'BjUnAzlo' #'Main' board
 trello = trello.TrelloApi(trello_key, token=trello_token)
 
 # function to post daily tasks to Slack
@@ -85,13 +85,9 @@ def getWeekRange():
 
 # function to see if date is this week
 def isThisWeek(due, week_list):
-  print trelloDateParse(due)
-  print week_list
   if trelloDateParse(due).date() in  week_list:
-    print due + ' is this week'
     return True
   else:
-    print due + ' is not this week'
     return False
 
 # function to see if dates match
