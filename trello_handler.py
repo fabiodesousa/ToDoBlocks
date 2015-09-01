@@ -5,19 +5,19 @@ import dateutil.parser
 import pytz
 
 # API keys:
-trello_key = # trello key
-trello_token = # trello token
-slack_key = # slack key
+trello_key =  # trello key
+trello_token =  # trello token
+slack_key =  # slack key
 # trello things
-trello_board_id = 'BjUnAzlo' #'Main' board
+trello_board_id =  #'Main' board
 trello = trello.TrelloApi(trello_key, token=trello_token)
 
 # function to post daily tasks to Slack
 # takes list of tuples (task_string, task_time)
 def slackPost(task_list):
   # Slack setup
-  slack_channel = '@fabio'# Slack channel or message "#channel_name" or "@message_recipient"
-  slack_bot_name = 'ToDoBot'# name of Slack bot (string)
+  slack_channel = # Slack channel or message "#channel_name" or "@message_recipient"
+  slack_bot_name = # name of Slack bot (string)
   # create a Slack object
   slack = Slacker(slack_key)
   #print header
@@ -189,7 +189,6 @@ for card in cards:
       slack_queue.append([card['name'], trelloDateParse(card['due'])])
     # if card is due this week
     elif isThisWeek(card['due'], week_list):
-      print card['name'], card['due']
       # set that card's list to This Week
       setCardListThisWeek(card, lists_dict)
     # if card has a date but not today or this week
