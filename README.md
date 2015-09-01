@@ -14,10 +14,10 @@ Each new task for the user gets sent to Incoming. As soon as possible, the user 
 - Moves all tasks due today to the Today list
 - Messages list of tasks due today to Slack
 - Archive items in the "Done" list
-
-## Next steps
 - "This Week" functionality
 - "Later" functionality
+
+## Next steps
 - Sort slack post items by time
 
 ## On the horizon

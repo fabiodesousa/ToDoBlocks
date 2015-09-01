@@ -5,11 +5,11 @@ import dateutil.parser
 import pytz
 
 # API keys:
-trello_key = '704e6c320a6b289a96d1da11cf209e3a' # trello key
-trello_token = 'bee447a36ea702188f84761692ed14d66954931b6df13268e870ebe8250f9e58' # trello token
-slack_key = 'xoxp-2366742675-2366742677-9704170688-5d6984' # slack key
+trello_key = # trello key
+trello_token =  # trello token
+slack_key =  # slack key
 # trello things
-trello_board_id = 'BjUnAzlo' #'Main' board
+trello_board_id = #'Main' board
 trello = trello.TrelloApi(trello_key, token=trello_token)
 
 # function to post daily tasks to Slack
@@ -64,7 +64,35 @@ def convertTimeZoneFromUTC(timestampValue):
 # returns a localized datetime object
 def trelloDateParse(due):
   due_utc = dateutil.parser.parse(due)
-  return convertTimeZoneFromUTC(due_utc)
+  return roundTime(convertTimeZoneFromUTC(due_utc))
+
+# function that returns date range for current week
+# range is a list of 7 dates
+# week begins on Monday
+def getWeekRange():
+  # set current date
+  date = datetime.date.today()
+  week_start = date - datetime.timedelta(date.weekday())
+  # list of week dates
+  week_list = []
+  i = 0
+  # while i < 7, add i to week_start and add to week_list. increment i
+  while i < 7:
+    week_add = week_start + datetime.timedelta(i)
+    week_list.append(week_add)
+    i += 1
+  return week_list
+
+# function to see if date is this week
+def isThisWeek(due, week_list):
+  print trelloDateParse(due)
+  print week_list
+  if trelloDateParse(due).date() in  week_list:
+    print due + ' is this week'
+    return True
+  else:
+    print due + ' is not this week'
+    return False
 
 # function to see if dates match
 def isDueToday(due):
@@ -115,6 +143,18 @@ def getListNamesAndIds(lists):
     lists_dict[item['name']] = item['id']
   return lists_dict
 
+# function that sets a card's list id to Later
+def setCardListLater(card, lists_dict):
+  # get listID of Later
+  later_list_id = lists_dict['Later']
+  trello.cards.update_idList(card['id'], later_list_id)
+
+# function that sets a card's list id to This Week
+def setCardListThisWeek(card, lists_dict):
+  # get listID of This Week
+  week_list_id = lists_dict['This Week']
+  trello.cards.update_idList(card['id'], week_list_id)
+
 # function that sets a card's list id to Today
 def setCardListToday(card, lists_dict):
   # get listID of Today
@@ -132,7 +172,8 @@ def archiveDoneCards(lists_dict):
 
 # instantiate slack_queue
 slack_queue = []
-
+# get week_list
+week_list = getWeekRange()
 # get lists_dict
 lists_dict = getListNamesAndIds(getTrelloLists(trello_board_id))
 # get all cards
@@ -140,16 +181,26 @@ cards = getTrelloCards(trello_board_id)
 # archive cards that are in 'Done'
 archiveDoneCards(lists_dict)
 
-# AT SOME POINT:
-# Change functions so that you do one loop and everything happens then?
-# This would make it O(n)?
+# for every card
+# if card has a due date
+for card in cards:
+  if card['due'] is not None:
+    # if card is due today:
+    if isDueToday(card['due']):
+      # set that card's list to Today
+      setCardListToday(card, lists_dict)
+      # send card name and due (rounded) to slack_queue
+      slack_queue.append([card['name'], trelloDateParse(card['due'])])
+    # if card is due this week
+    elif isThisWeek(card['due'], week_list):
+      print card['name'], card['due']
+      # set that card's list to This Week
+      setCardListThisWeek(card, lists_dict)
+    # if card has a date but not today or this week
+    # move it to Later
+    else:
+      setCardListLater(card, lists_dict)
 
-# for every card due today
-for card in getCardsDueToday(cards):
-  # set that card's list to Today
-  setCardListToday(card, lists_dict)
-  # send card name and due (rounded) to slack_queue
-  slack_queue.append([card['name'], roundTime(trelloDateParse(card['due']))])
 
 # post to Slack!
 slackPost(slack_queue)
